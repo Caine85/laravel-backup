@@ -17,6 +17,9 @@ class Zip
     /** @var string */
     protected $pathToZip;
 
+    /** @var bool */
+    protected $relativePaths;
+
     public static function createForManifest(Manifest $manifest, string $pathToZip): self
     {
         $zip = new static($pathToZip);
@@ -50,6 +53,8 @@ class Zip
         $this->zipFile = new ZipArchive();
 
         $this->pathToZip = $pathToZip;
+
+        $this->relativePaths = config('backup.backup.zip.relative_paths') ?? false;
 
         $this->open();
     }
@@ -101,11 +106,11 @@ class Zip
 
         foreach ($files as $file) {
             if (is_dir($file)) {
-                $this->zipFile->addEmptyDir($file);
+                $this->zipFile->addEmptyDir($this->relativePaths ? str_replace(base_path(), '', $file) : $file);
             }
 
             if (is_file($file)) {
-                $this->zipFile->addFile($file, ltrim($nameInZip, DIRECTORY_SEPARATOR)).PHP_EOL;
+                $this->zipFile->addFile($file, ltrim( $this->relativePaths ? str_replace(base_path(),'', $nameInZip) : $nameInZip, DIRECTORY_SEPARATOR)).PHP_EOL;
             }
             $this->fileCount++;
         }

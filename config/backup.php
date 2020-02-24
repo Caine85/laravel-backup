@@ -104,6 +104,14 @@ return [
          * The directory where the temporary files will be stored.
          */
         'temporary_directory' => storage_path('app/backup-temp'),
+
+        'zip' => [
+
+            /*
+             * Use relative paths in zip file instead of absolute paths
+             */
+            'relative_paths' => false,
+        ],
     ],
 
     /*
